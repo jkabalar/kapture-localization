@@ -39,9 +39,9 @@ unzip Resnet101-AP-GeM-LM18.pt.zip
 rm -rf Resnet101-AP-GeM-LM18.pt.zip
 # R2D2
 cd ${WORKING_DIR}
-git clone https://github.com/naver/r2d2.git
+#git clone https://github.com/naver/r2d2.git
 
-for SCENE in scene01 scene02 scene03 scene04 scene05 scene06 scene07 scene08 scene09 scene10; do 
+for SCENE in scene02; do 
   DATASET=RIO10/${SCENE}
   # 1) Create temporal mapping and query sets (they will be modified)
   mkdir -p ${WORKING_DIR}/${DATASET}/mapping/sensors
@@ -67,26 +67,26 @@ for SCENE in scene01 scene02 scene03 scene04 scene05 scene06 scene07 scene08 sce
   rm -rf ${WORKING_DIR}/${DATASET}/map_plus_testing/reconstruction/global_features/Resnet101-AP-GeM-LM18
 
   # 4) Extract local features (we will use R2D2 here)
-  cd ${WORKING_DIR}/r2d2
-  ${PYTHONBIN} extract_kapture.py --model models/r2d2_WASF_N8_big.pt --kapture-root ${WORKING_DIR}/${DATASET}/map_plus_testing/ --min-scale 0.3 --min-size 128 --max-size 9999 --top-k ${KPTS}
+  #cd ${WORKING_DIR}/r2d2
+  #${PYTHONBIN} extract_kapture.py --model models/r2d2_WASF_N8_big.pt --kapture-root ${WORKING_DIR}/${DATASET}/map_plus_testing/ --min-scale 0.3 --min-size 128 --max-size 9999 --top-k ${KPTS}
   # move to right location
   mkdir -p ${WORKING_DIR}/${DATASET}/local_features/r2d2_WASF_N8_big/descriptors
-  mv ${WORKING_DIR}/${DATASET}/map_plus_testing/reconstruction/descriptors/r2d2_WASF_N8_big/* ${WORKING_DIR}/${DATASET}/local_features/r2d2_WASF_N8_big/descriptors/
+  #mv ${WORKING_DIR}/${DATASET}/map_plus_testing/reconstruction/descriptors/r2d2_WASF_N8_big/* ${WORKING_DIR}/${DATASET}/local_features/r2d2_WASF_N8_big/descriptors/
   mkdir -p ${WORKING_DIR}/${DATASET}/local_features/r2d2_WASF_N8_big/keypoints
-  mv ${WORKING_DIR}/${DATASET}/map_plus_testing/reconstruction/keypoints/r2d2_WASF_N8_big/* ${WORKING_DIR}/${DATASET}/local_features/r2d2_WASF_N8_big/keypoints/
+  #mv ${WORKING_DIR}/${DATASET}/map_plus_testing/reconstruction/keypoints/r2d2_WASF_N8_big/* ${WORKING_DIR}/${DATASET}/local_features/r2d2_WASF_N8_big/keypoints/
 
   # 5) mapping pipeline
-  LOCAL=r2d2_WASF_N8_big
-  GLOBAL=Resnet101-AP-GeM-LM18
-  kapture_pipeline_mapping.py -v debug -f \
-    -i ${WORKING_DIR}/${DATASET}/mapping \
-    -kpt ${WORKING_DIR}/${DATASET}/local_features/${LOCAL}/keypoints \
-    -desc ${WORKING_DIR}/${DATASET}/local_features/${LOCAL}/descriptors \
-    -gfeat ${WORKING_DIR}/${DATASET}/global_features/${GLOBAL}/global_features \
-    -matches ${WORKING_DIR}/${DATASET}/local_features/${LOCAL}/NN_no_gv/matches \
-    -matches-gv ${WORKING_DIR}/${DATASET}/local_features/${LOCAL}/NN_colmap_gv/matches \
-    --colmap-map ${WORKING_DIR}/${DATASET}/colmap-sfm/${LOCAL}/${GLOBAL} \
-    --topk ${TOPK}
+  #LOCAL=r2d2_WASF_N8_big
+  #GLOBAL=Resnet101-AP-GeM-LM18
+  #kapture_pipeline_mapping.py -v debug -f \
+  #  -i ${WORKING_DIR}/${DATASET}/mapping \
+  #  -kpt ${WORKING_DIR}/${DATASET}/local_features/${LOCAL}/keypoints \
+  #  -desc ${WORKING_DIR}/${DATASET}/local_features/${LOCAL}/descriptors \
+  #  -gfeat ${WORKING_DIR}/${DATASET}/global_features/${GLOBAL}/global_features \
+  #  -matches ${WORKING_DIR}/${DATASET}/local_features/${LOCAL}/NN_no_gv/matches \
+  # -matches-gv ${WORKING_DIR}/${DATASET}/local_features/${LOCAL}/NN_colmap_gv/matches \
+  #  --colmap-map ${WORKING_DIR}/${DATASET}/colmap-sfm/${LOCAL}/${GLOBAL} \
+  #  --topk ${TOPK}
 
   # 6) localization pipeline
   kapture_pipeline_localize.py -v debug -f \
@@ -101,8 +101,9 @@ for SCENE in scene01 scene02 scene03 scene04 scene05 scene06 scene07 scene08 sce
     -o ${WORKING_DIR}/${DATASET}/colmap-localize/${LOCAL}/${GLOBAL} \
     --topk ${TOPK} \
     --config 2 \
-    --benchmark-style RIO10
+    --benchmark-style RIO10 \
+    --skip ['compute_matches', 'geometric_verification', 'colmap_localize', 'import_colmap' ,'evaluate'] 
 
   # 7) cat the output files in order to generate one file for benchmark submission
-  cat ${WORKING_DIR}/${DATASET}/colmap-localize/${LOCAL}/${GLOBAL}/LTVL2020_style_result.txt >> ${WORKING_DIR}/RIO10/RIO10_LTVL2020_style_result_all_scenes_${LOCAL}_${GLOBAL}.txt
+  #cat ${WORKING_DIR}/${DATASET}/colmap-localize/${LOCAL}/${GLOBAL}/LTVL2020_style_result.txt >> ${WORKING_DIR}/RIO10/RIO10_LTVL2020_style_result_all_scenes_${LOCAL}_${GLOBAL}.txt
 done
