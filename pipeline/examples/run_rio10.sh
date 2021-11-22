@@ -19,7 +19,7 @@ KPTS=20000 # number of local features to extract
 # Note that you will be asked to accept or decline the license terms before download.
 cd ${DATASETS_PATH}
 kapture_download_dataset.py --install_path ${DATASETS_PATH} update
-for SCENE in scene01 scene02 scene03 scene04 scene05 scene06 scene07 scene08 scene09 scene10; do 
+for SCENE in scene02; do 
   kapture_download_dataset.py --install_path ${DATASETS_PATH} install "RIO10_${SCENE}_*"
 done
 
