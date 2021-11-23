@@ -87,6 +87,8 @@ for SCENE in scene02; do
   # -matches-gv ${WORKING_DIR}/${DATASET}/local_features/${LOCAL}/NN_colmap_gv/matches \
   #  --colmap-map ${WORKING_DIR}/${DATASET}/colmap-sfm/${LOCAL}/${GLOBAL} \
   #  --topk ${TOPK}
+  
+  mkdir -p ${WORKING_DIR}/${DATASET}/colmap-sfm/${LOCAL}/${GLOBAL}
 
   # 6) localization pipeline
   kapture_pipeline_localize.py -v debug -f \
@@ -102,7 +104,7 @@ for SCENE in scene02; do
     --topk ${TOPK} \
     --config 2 \
     --benchmark-style RIO10 \
-    --skip ['compute_matches', 'geometric_verification', 'colmap_localize', 'import_colmap' ,'evaluate'] 
+    --skip 'compute_matches' 'geometric_verification' 'colmap_localize' 'import_colmap' 'evaluate' 
 
   # 7) cat the output files in order to generate one file for benchmark submission
   #cat ${WORKING_DIR}/${DATASET}/colmap-localize/${LOCAL}/${GLOBAL}/LTVL2020_style_result.txt >> ${WORKING_DIR}/RIO10/RIO10_LTVL2020_style_result_all_scenes_${LOCAL}_${GLOBAL}.txt
