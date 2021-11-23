@@ -76,8 +76,8 @@ for SCENE in scene02; do
   #mv ${WORKING_DIR}/${DATASET}/map_plus_testing/reconstruction/keypoints/r2d2_WASF_N8_big/* ${WORKING_DIR}/${DATASET}/local_features/r2d2_WASF_N8_big/keypoints/
 
   # 5) mapping pipeline
-  #LOCAL=r2d2_WASF_N8_big
-  #GLOBAL=Resnet101-AP-GeM-LM18
+  LOCAL=r2d2_WASF_N8_big
+  GLOBAL=Resnet101-AP-GeM-LM18
   #kapture_pipeline_mapping.py -v debug -f \
   #  -i ${WORKING_DIR}/${DATASET}/mapping \
   #  -kpt ${WORKING_DIR}/${DATASET}/local_features/${LOCAL}/keypoints \
